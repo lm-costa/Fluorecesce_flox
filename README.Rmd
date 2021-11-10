@@ -47,7 +47,7 @@ psd_table <- psd_table |>
   )
 ```
 
-## **integral and Correlation Function**
+## **Integrating by wavelength and Correlating the wavelength with GPP**
 
 ```{r,echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
 spect_tab <- psd_table[,-c(1:85,768:943)]
@@ -194,7 +194,14 @@ csd_table |>
 
 ```
 ```{r, ,echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
-psd_table |> 
+psd_table |> dplyr::mutate(
+    Period = dplyr::case_when(
+      day <= 161 ~ "A",
+      day <= 179 ~ "Harvest",
+      day <= 193 ~ "B"
+    )
+  ) |>
+  dplyr::filter(Period == "A" | Period == "B") |>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= Fint))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
@@ -217,6 +224,14 @@ csd_table |>
 
 ```{r, ,echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
 psd_table |> 
+  dplyr::mutate(
+    Period = dplyr::case_when(
+      day <= 161 ~ "A",
+      day <= 179 ~ "Harvest",
+      day <= 193 ~ "B"
+    )
+  ) |>
+  dplyr::filter(Period == "A" | Period == "B") |>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
@@ -239,7 +254,15 @@ csd_table |>
 
 
 ```{r,echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
-psd_table |> 
+psd_table |>
+  dplyr::mutate(
+    Period = dplyr::case_when(
+      day <= 161 ~ "A",
+      day <= 179 ~ "Harvest",
+      day <= 193 ~ "B"
+    )
+  ) |>
+  dplyr::filter(Period == "A" | Period == "B") |>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `740.02`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
@@ -306,7 +329,13 @@ psd_table |>
 
 # **Correcting Fluorescence by the re-absortion**
 
-The method for correting Fluorescence by re-absortion *(Frc)* is based on the *Cesana (2021)* thesis. 
+The method for correting Fluorescence by re-absortion *(Frc)* described in *Cesana (2021)* thesis.
+
+```{r echo=FALSE, fig.cap="",fig.align='center', out.width="500px"}
+
+knitr::include_graphics("data-raw/fig/eq.jpeg")
+
+```
 
 The two data-set are gonna be recorrected, just with the **clear sky days** and the same will be donne in the **partial + clear sky days**
 
@@ -320,8 +349,8 @@ ind_file <- readr::read_csv("data-raw/table_all_index.csv") |>
 fobs <- cbind(ind_file,fobs)
 ```
 
-Retriving the necessary coeficients 
-```{r, echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
+
+```{r, echo=FALSE, warning=FALSE,cache=FALSE,message=FALSE}
 a = dplyr::case_when(
   abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(22))~ 81.36 - 13.45*cos(circular::rad(fobs$SZA)),
   abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(24)) ~ 78.61 -10.49*cos(circular::rad(fobs$SZA)),
@@ -373,7 +402,7 @@ names(Frc)[c(1,2)] <- c("DOY", "UTC")
 
 ```
 
-Now we are gonna agreggate the table and compare to the gpp file . The description can be found in [here]()
+Now we are gonna agreggate the table and compare to the gpp file . The description can be found in [here](https://github.com/lm-costa/draft_bepe)
 
 ```{r,echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
 time_table <- Frc |>

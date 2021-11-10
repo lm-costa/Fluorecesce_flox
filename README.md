@@ -51,7 +51,7 @@ psd_table <- psd_table |>
   )
 ```
 
-## **integral and Correlation Function**
+## **Integrating by wavelength and Correlating the wavelength with GPP**
 
 ``` r
 spect_tab <- psd_table[,-c(1:85,768:943)]
@@ -216,7 +216,14 @@ csd_table |>
 ![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
-psd_table |> 
+psd_table |> dplyr::mutate(
+    Period = dplyr::case_when(
+      day <= 161 ~ "A",
+      day <= 179 ~ "Harvest",
+      day <= 193 ~ "B"
+    )
+  ) |>
+  dplyr::filter(Period == "A" | Period == "B") |>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= Fint))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
@@ -241,6 +248,14 @@ csd_table |>
 
 ``` r
 psd_table |> 
+  dplyr::mutate(
+    Period = dplyr::case_when(
+      day <= 161 ~ "A",
+      day <= 179 ~ "Harvest",
+      day <= 193 ~ "B"
+    )
+  ) |>
+  dplyr::filter(Period == "A" | Period == "B") |>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
@@ -264,7 +279,15 @@ csd_table |>
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
-psd_table |> 
+psd_table |>
+  dplyr::mutate(
+    Period = dplyr::case_when(
+      day <= 161 ~ "A",
+      day <= 179 ~ "Harvest",
+      day <= 193 ~ "B"
+    )
+  ) |>
+  dplyr::filter(Period == "A" | Period == "B") |>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `740.02`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
@@ -335,8 +358,10 @@ psd_table |>
 
 # **Correcting Fluorescence by the re-absortion**
 
-The method for correting Fluorescence by re-absortion *(Frc)* is based
-on the *Cesana (2021)* thesis.
+The method for correting Fluorescence by re-absortion *(Frc)* described
+in *Cesana (2021)* thesis.
+
+<img src="data-raw/fig/eq.jpeg" width="500px" style="display: block; margin: auto;" />
 
 The two data-set are gonna be recorrected, just with the **clear sky
 days** and the same will be donne in the **partial + clear sky days**
@@ -349,37 +374,6 @@ ind_file <- readr::read_csv("data-raw/table_all_index.csv") |>
   dplyr::filter(DOYdayfrac > 127.8)
 
 fobs <- cbind(ind_file,fobs)
-```
-
-Retriving the necessary coeficients
-
-``` r
-a = dplyr::case_when(
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(22))~ 81.36 - 13.45*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(24)) ~ 78.61 -10.49*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(26)) ~ 77.05 -8.78*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(28)) ~ 77 -8.727*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(30)) ~ 75.157 -6.637*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(32)) ~ 73.526 -4.753*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(34)) ~ 72.087 -3.057*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(36)) ~ 70.665 -1.342*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(38)) ~ 68.9615 +0.7643*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(40)) ~ 67.24 +2.949*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(42)) ~ 65.552 +5.152*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(44)) ~ 63.412 +8.033*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) <=cos(circular::rad(46)) ~ 61.39 +10.84*cos(circular::rad(fobs$SZA)),
-  abs(cos(circular::rad(fobs$SZA))) > cos(circular::rad(46)) ~ 59.58 +13.45*cos(circular::rad(fobs$SZA)),
-)
-
-b = -0.23*cos(circular::rad(fobs$SZA))^2 + 0.58*cos(circular::rad(fobs$SZA)) + 0.43
-
-
-a1 = a*fobs$`760.047500715471`^b
-a2 = 0.2546*a1
-b1 = 682.2
-b2=706.7
-c1=11.49
-c2=54.47
 ```
 
 doing the re-absortion
@@ -405,7 +399,8 @@ names(Frc)[c(1,2)] <- c("DOY", "UTC")
 ```
 
 Now we are gonna agreggate the table and compare to the gpp file . The
-description can be found in [here]()
+description can be found in
+[here](https://github.com/lm-costa/draft_bepe)
 
 ``` r
 time_table <- Frc |>
@@ -550,7 +545,7 @@ correl[-c(683:684),] |>
   ggplot2::xlab(label="Fluorescence Spectra in nm")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
 ``` r
 time_agg |>
@@ -565,7 +560,7 @@ time_agg |>
   ggplot2::xlab(label="Wavelength")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 ``` r
 df_final|>
@@ -576,7 +571,7 @@ df_final|>
     label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 ``` r
 df_tab <- df_final|>
@@ -590,4 +585,4 @@ df_tab |>
     label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
