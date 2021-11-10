@@ -338,6 +338,6 @@ psd_table |>
 The method for correting Fluorescence by re-absortion *(Frc)* is based
 on the *Cesana (2021)* thesis where:
 
-    $$Frc = a_{1}\times e^{-(\frac{wvl - b_{1}}{c_{1}})} + a_{2}\times e^{-(\frac{wvl - b_{2}}{c_{2}})}$$
+$$Frc = a\_{1}\\times e^{-(\\frac{wvl - b\_{1}}{c\_{1}})} + a\_{2}\\times e^{-(\\frac{wvl - b\_{2}}{c\_{2}})}$$
 
 where: *wvl = wavelength*
