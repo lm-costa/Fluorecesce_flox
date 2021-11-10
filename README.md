@@ -5,8 +5,8 @@ Fluorescence
 
 This data consist… in a similar way of the following
 [repository](https://github.com/lm-costa/draft_bepe) we are gonna
-retrivied some metrics for the partial and clear sky days together. This
-table are already pre-proced.
+retrieved some metrics for the partial and clear sky days together. This
+table are already pre-proceed.
 
 ``` r
 nfile <- list.files("data-raw/", pattern = "_psd")
@@ -144,7 +144,7 @@ correl[-c(683:684),] |>
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-## \*\*aPAR, LUE and Fy
+## **aPAR, LUE and Fy**
 
 ``` r
 psd_table <- psd_table |>
@@ -163,19 +163,20 @@ and finally subseting
 ``` r
 psd_table <- psd_table |> 
   dplyr::select(
-    Group.1, day, Hr1, SZA, PAR_Wm2, LUE, GPP_DT, GPP_DT_U95, Fy, Fint,
+    Group.1, day, Hr1, SZA, PAR_Wm2, NDVI, LUE, GPP_DT, GPP_DT_U95, Fy, Fint,
     `685.09`,`705.1`,`779.96` ,`740.02`,`757.11`, `771.06`
   ) |> 
   dplyr::glimpse()
 ```
 
     ## Rows: 366
-    ## Columns: 16
+    ## Columns: 17
     ## $ Group.1    <fct> 2018-05-25 09:00:00, 2018-05-25 09:30:00, 2018-05-25 10:00:~
     ## $ day        <dbl> 145, 145, 145, 145, 145, 145, 145, 145, 145, 145, 145, 145,~
     ## $ Hr1        <int> 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 1~
     ## $ SZA        <dbl> 32.92583, 28.54777, 24.98358, 22.66306, 21.92419, 22.93531,~
     ## $ PAR_Wm2    <dbl> 369.93567, 391.71895, 406.27653, 415.26607, 417.01186, 412.~
+    ## $ NDVI       <dbl> 0.9488279, 0.9484732, 0.9492679, 0.9491877, 0.9484328, 0.94~
     ## $ LUE        <dbl> -0.11373095, -0.14644877, -0.25393151, -0.32444556, -0.4657~
     ## $ GPP_DT     <dbl> 24.2, 25.1, 25.9, 26.4, 26.7, 24.8, 24.7, 25.4, 26.1, 25.4,~
     ## $ GPP_DT_U95 <dbl> 25.1, 26.2, 27.1, 27.7, 28.1, 26.6, 26.6, 27.0, 27.4, 26.5,~
@@ -189,6 +190,9 @@ psd_table <- psd_table |>
     ## $ `771.06`   <dbl> 1.9703019, 2.0396786, 2.2565206, 2.3006356, 2.3854447, 2.49~
 
 ## *Uploading clear sky days.*
+
+This table where acquire in the following
+[repository](https://github.com/lm-costa/draft_bepe)
 
 ``` r
 csd_table <- readr::read_rds("data-raw/base_csd.rds")
@@ -246,7 +250,7 @@ psd_table |>
 
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
-### \*F 740
+### *F 740*
 
 ``` r
 csd_table |> 
@@ -330,3 +334,10 @@ psd_table |>
 ![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 # **Correcting Fluorescence by the re-absortion**
+
+The method for correting Fluorescence by re-absortion *(Frc)* is based
+on the *Cesana (2021)* thesis where:
+
+    $$Frc = a_{1}\times e^{-(\frac{wvl - b_{1}}{c_{1}})} + a_{2}\times e^{-(\frac{wvl - b_{2}}{c_{2}})}$$
+
+where: *wvl = wavelength*

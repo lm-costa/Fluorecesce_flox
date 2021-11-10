@@ -6,7 +6,7 @@ output: github_document
 # **Introduction**
 
 This data consist... 
-in  a similar way of the following [repository](https://github.com/lm-costa/draft_bepe) we are gonna retrivied some metrics for the partial and clear sky days together. This table are already pre-proced. 
+in  a similar way of the following [repository](https://github.com/lm-costa/draft_bepe) we are gonna retrieved some metrics for the partial and clear sky days together. This table are already pre-proceed. 
 
 ```{r,echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
 nfile <- list.files("data-raw/", pattern = "_psd")
@@ -139,7 +139,8 @@ correl[-c(683:684),] |>
 
 ```
 
-## **aPAR, LUE and Fy 
+## **aPAR, LUE and Fy** 
+
 
 ```{r}
 psd_table <- psd_table |>
@@ -160,7 +161,7 @@ and finally subseting
 
 psd_table <- psd_table |> 
   dplyr::select(
-    Group.1, day, Hr1, SZA, PAR_Wm2, LUE, GPP_DT, GPP_DT_U95, Fy, Fint,
+    Group.1, day, Hr1, SZA, PAR_Wm2, NDVI, LUE, GPP_DT, GPP_DT_U95, Fy, Fint,
     `685.09`,`705.1`,`779.96` ,`740.02`,`757.11`, `771.06`
   ) |> 
   dplyr::glimpse()
@@ -168,6 +169,8 @@ psd_table <- psd_table |>
 
 
 ## *Uploading clear sky days.*
+
+This table where acquire in the following [repository](https://github.com/lm-costa/draft_bepe)
 
 ```{r, ,echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
 
@@ -223,7 +226,7 @@ psd_table |>
 ```
 
 
-### *F 740
+### *F 740*
 ```{r, echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
 csd_table |> 
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `740.02`))+
@@ -301,5 +304,15 @@ psd_table |>
 
 ```
 
-
 # **Correcting Fluorescence by the re-absortion**
+
+The method for correting Fluorescence by re-absortion *(Frc)* is based on the *Cesana (2021)* thesis where: 
+
+```{}
+$$Frc = a_{1}\times e^{-(\frac{wvl - b_{1}}{c_{1}})} + a_{2}\times e^{-(\frac{wvl - b_{2}}{c_{2}})}$$
+```
+
+where: *wvl = wavelength*
+
+
+
