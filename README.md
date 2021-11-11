@@ -562,6 +562,44 @@ time_agg |>
 
 ![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
+Filtering for the same days before reabsorpion and calculating LUE an Fy
+
+``` r
+df_tab <- df_final|>
+  dplyr::filter(day != 171 & day !=177 & day !=188 & day != 189
+                & day !=199 & day != 200 & day != 201)
+
+df_tab |> 
+  dplyr::mutate(
+    Frc_y= `685.09`/csd_table$aPAR,
+    Fy = csd_table$Fy) |> 
+  ggplot2::ggplot(ggplot2::aes(x=Fy, y=Frc_y))+
+  ggplot2::geom_jitter(ggplot2::aes(col=as.factor(day)))+
+  ggplot2::geom_smooth(method = "lm")+
+  ggpubr::stat_regline_equation(ggplot2::aes(
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+``` r
+df_tab |> 
+  dplyr::mutate(
+    Frc_y= `685.09`/csd_table$aPAR,
+    LUE = csd_table$LUE) |> 
+  ggplot2::ggplot(ggplot2::aes(x=LUE, y=Frc_y))+
+  ggplot2::geom_jitter(ggplot2::aes(col=as.factor(day)))+
+  ggplot2::geom_smooth(method = "lm")+
+  ggpubr::stat_regline_equation(ggplot2::aes(
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
 ``` r
 df_final|>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
@@ -571,18 +609,4 @@ df_final|>
     label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
-
-``` r
-df_tab <- df_final|>
-  dplyr::filter(day != 171 & day !=177 & day !=188 & day != 189
-                & day !=199 & day != 200 & day != 201)
-df_tab |>
-  ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
-  ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
-  ggplot2::geom_smooth(method = "lm")+
-  ggpubr::stat_regline_equation(ggplot2::aes(
-    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
-```
-
-![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
