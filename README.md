@@ -601,7 +601,7 @@ df_tab |>
 ![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 ``` r
-df_final|>
+df_tab|>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+

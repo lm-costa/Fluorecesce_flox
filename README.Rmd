@@ -595,7 +595,7 @@ df_tab |>
 
 
 ```{r,echo=TRUE, warning=FALSE,cache=FALSE,message=FALSE}
-df_final|>
+df_tab|>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
