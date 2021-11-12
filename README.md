@@ -146,6 +146,21 @@ correl[-c(683:684),] |>
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
+``` r
+psd_table |>
+  tidyr::pivot_longer(
+    cols = "669.98":"779.96",
+    names_to = "wavelength",
+    values_to = "Fluorescence") |>
+  ggplot2::ggplot(ggplot2::aes(x=as.numeric(wavelength), y=Fluorescence, color=DOYdayfrac)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line()+
+  ggplot2::facet_wrap(~day,scales = "free")+
+  ggplot2::xlab(label="Wavelength")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+
 ## **aPAR, LUE and Fy**
 
 ``` r
