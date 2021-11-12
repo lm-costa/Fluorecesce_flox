@@ -47,7 +47,7 @@ psd_table <- psd_table |>
     & day!=168 & day!=192  # criteria i
     & day!= 147 & day != 148 & day!=149  & day!=157 & day!=163
     & day!=172 & day!=175 & day!=176 & day!=179 & day!=184 & day!=189
-    & day!=193
+    & day!=193 & day!= 199 & day!=200 & day!=201
   )
 ```
 
@@ -84,7 +84,7 @@ for(i in 2:length(result)){
   }
 }
 
-row.names(fint) <- seq(1:366)
+row.names(fint) <- seq(1:(nrow(fint)))
 colnames(fint) <- "Fint"
 
 ## Now we are gonna add the integral in the final dataset
@@ -92,14 +92,14 @@ colnames(fint) <- "Fint"
 psd_table <- cbind(psd_table,fint)
 
 ######
-fint_t <- vector("numeric", length = 367)
+fint_t <- vector("numeric", length = ncol(spect_tab))
 
-fint_t[2:367] <- t(fint)
+fint_t[2:ncol(spect_tab)] <- t(fint)
 
 spect_tab[683, ] <- fint_t
 
-gpp <- vector("numeric", length =367)
-gpp[2:367] <- psd_table$GPP_DT_U95
+gpp <- vector("numeric", length = ncol(spect_tab))
+gpp[2:ncol(spect_tab)] <- psd_table$GPP_DT_U95
 spect_tab[684, ] <- gpp
 
 for(i in 2:ncol(spect_tab)){
@@ -139,7 +139,9 @@ correl[,2] <- spect_tab$spect
 correl[-c(683:684),] |>
   ggplot2::ggplot(ggplot2::aes(x=as.numeric(V2), y = cor))+
   ggplot2::geom_point()+
-  ggplot2::xlab(label="Fluorescence Spectra in nm")
+  ggplot2::xlab(label="Fluorescence Spectra in nm")+
+  ggplot2::ylab(label="Pearson's Correlation")+
+  ggplot2::theme_classic()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
@@ -206,11 +208,13 @@ csd_table <- readr::read_rds("data-raw/base_csd.rds")
 
 ``` r
 csd_table |> 
-  ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= Fint))+
+  ggplot2::ggplot(ggplot2::aes(x=Fint,y=GPP_DT_U95))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY", x =expression(paste("F" [integral]," ( ",Wm^-2, sr^-1,mu,m^-1,")")), y= "GPP")+
+  ggplot2::theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
@@ -224,11 +228,13 @@ psd_table |> dplyr::mutate(
     )
   ) |>
   dplyr::filter(Period == "A" | Period == "B") |>
-  ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= Fint))+
+  ggplot2::ggplot(ggplot2::aes(x=Fint,y=GPP_DT_U95))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY", x =expression(paste("F" [integral]," ( ",Wm^-2, sr^-1,mu,m^-1,")")), y= "GPP")+
+  ggplot2::theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
@@ -237,11 +243,13 @@ psd_table |> dplyr::mutate(
 
 ``` r
 csd_table |> 
-  ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
+  ggplot2::ggplot(ggplot2::aes(y=GPP_DT_U95, x= `685.09`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY", x =expression(paste("F"[red]," ( ",Wm^-2, sr^-1,mu,m^-1,")")), y= "GPP")+
+  ggplot2::theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
@@ -256,11 +264,13 @@ psd_table |>
     )
   ) |>
   dplyr::filter(Period == "A" | Period == "B") |>
-  ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
+  ggplot2::ggplot(ggplot2::aes(y=GPP_DT_U95, x= `685.09`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY", x =expression(paste("F"[red]," ( ",Wm^-2, sr^-1,mu,m^-1,")")), y= "GPP")+
+  ggplot2::theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
@@ -269,11 +279,13 @@ psd_table |>
 
 ``` r
 csd_table |> 
-  ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `740.02`))+
+  ggplot2::ggplot(ggplot2::aes(y=GPP_DT_U95, x= `740.02`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY", x =expression(paste("F"[Far]," "[Red]," ( ",Wm^-2, sr^-1,mu,m^-1,")")), y= "GPP")+
+  ggplot2::theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
@@ -288,11 +300,13 @@ psd_table |>
     )
   ) |>
   dplyr::filter(Period == "A" | Period == "B") |>
-  ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `740.02`))+
+  ggplot2::ggplot(ggplot2::aes(y=GPP_DT_U95, x= `740.02`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY", x =expression(paste("F"[Far]," "[Red]," ( ",Wm^-2, sr^-1,mu,m^-1,")")), y= "GPP")+
+  ggplot2::theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
@@ -315,7 +329,8 @@ psd_table|>
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
   label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
-  ggplot2::theme_classic()
+  ggplot2::labs( x =expression(paste("F"[integral]," ( ",Wm^-2, sr^-1,mu,m^-1,")")), y= "GPP")+
+  ggplot2::theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
@@ -324,11 +339,13 @@ psd_table|>
 
 ``` r
 csd_table |> 
-  ggplot2::ggplot(ggplot2::aes(x=Fy, y= LUE))+
+  ggplot2::ggplot(ggplot2::aes(y=Fy, x= LUE))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY", y =expression('F'[yield]), x= "LUE")+
+  ggplot2::theme_bw()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
@@ -344,13 +361,14 @@ psd_table |>
   ) |>
   dplyr::filter(Period == "A" | Period == "B") |>
   dplyr::filter(LUE > 0) |>
-  ggplot2::ggplot(ggplot2::aes(x=Fy, y= LUE))+
+  ggplot2::ggplot(ggplot2::aes(y=Fy, x= LUE))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
   label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
-   ggplot2::xlim(0,3)+
-  ggplot2::ylim(0,.5)+
+  ggplot2::labs(colour="DOY", y =expression('F'[yield]), x= "LUE")+
+   ggplot2::xlim(0,.5)+
+  ggplot2::ylim(0,3)+
   ggplot2::theme_bw()
 ```
 
@@ -542,7 +560,8 @@ And here we can made some plots to see how our data is now
 correl[-c(683:684),] |>
   ggplot2::ggplot(ggplot2::aes(x=as.numeric(V2), y = cor))+
   ggplot2::geom_point()+
-  ggplot2::xlab(label="Fluorescence Spectra in nm")
+  ggplot2::labs(x="Fluorescence Spectra in nm", y="Pearson's Correlation")+
+  ggplot2::theme_classic()
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
@@ -571,13 +590,15 @@ df_tab <- df_final|>
 
 df_tab |> 
   dplyr::mutate(
-    Frc_y= `685.09`/csd_table$aPAR,
+    Frc_y= Fint/csd_table$aPAR,
     Fy = csd_table$Fy) |> 
   ggplot2::ggplot(ggplot2::aes(x=Fy, y=Frc_y))+
   ggplot2::geom_jitter(ggplot2::aes(col=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY",x=expression(paste("F"[yield]," Observed")), y=expression(paste("F"[yield]," Corrected")))+
+  ggplot2::theme_bw()
 ```
 
     ## `geom_smooth()` using formula 'y ~ x'
@@ -588,12 +609,14 @@ df_tab |>
 df_tab |> 
   dplyr::mutate(
     Frc_y= `685.09`/csd_table$aPAR,
-    LUE = csd_table$LUE) |> 
-  ggplot2::ggplot(ggplot2::aes(x=LUE, y=Frc_y))+
+    Fy = csd_table$Fy) |> 
+  ggplot2::ggplot(ggplot2::aes(x=Fy, y=Frc_y))+
   ggplot2::geom_jitter(ggplot2::aes(col=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY",x=expression(paste("F"[yield]," Observed")), y=expression(paste("F 685"[yield]," Corrected")))+
+  ggplot2::theme_bw()
 ```
 
     ## `geom_smooth()` using formula 'y ~ x'
@@ -601,12 +624,32 @@ df_tab |>
 ![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 ``` r
+df_tab |> 
+  dplyr::mutate(
+    Frc_y= Fint/csd_table$aPAR,
+    Fy = csd_table$LUE) |> 
+  ggplot2::ggplot(ggplot2::aes(x=Fy, y=Frc_y))+
+  ggplot2::geom_jitter(ggplot2::aes(col=as.factor(day)))+
+  ggplot2::geom_smooth(method = "lm")+
+  ggpubr::stat_regline_equation(ggplot2::aes(
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY",x="LUE", y=expression(paste("F"[yield]," Corrected")))+
+  ggplot2::theme_bw()
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+
+``` r
 df_tab|>
   ggplot2::ggplot(ggplot2::aes(x=GPP_DT_U95, y= `685.09`))+
   ggplot2::geom_jitter(ggplot2::aes(colour=as.factor(day)))+
   ggplot2::geom_smooth(method = "lm")+
   ggpubr::stat_regline_equation(ggplot2::aes(
-    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))+
+  ggplot2::labs(colour="DOY", x="GPP", y=expression(paste("F"[685]," Corrected")))+
+  ggplot2::theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
