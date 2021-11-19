@@ -525,12 +525,12 @@ df_final <- df_final[-c(65,159),]
 df_final <- cbind(df_final,fint)
 
 
-fint_t <- vector("numeric", length = 205)
-fint_t[2:205] <- t(fint)
+fint_t <- vector("numeric", length = 204)
+fint_t[2:204] <- t(fint)
 
 spectra_Table[683, ] <- fint_t
-gpp <- vector("numeric", length = 205)
-gpp[2:205] <- df_final$GPP_DT_U95
+gpp <- vector("numeric", length = 204)
+gpp[2:204] <- df_final$GPP_DT_U95
 spectra_Table[684, ] <- gpp
 
 for(i in 2:ncol(spectra_Table)){
