@@ -3,7 +3,7 @@ Fluorescence
 
 # **Introduction**
 
-This data consist… in a similar way of the following
+In a similar way of the following
 [repository](https://github.com/lm-costa/draft_bepe) we are gonna
 retrieved some metrics for the partial and clear sky days together. This
 table are already pre-proceed.
